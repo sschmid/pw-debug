@@ -215,15 +215,13 @@ pw::output() {
 		printf '%s\n' "${output}"
 	else
 		local pname
-		local -i pid
+		local pids
 		pname="pw-$(id -u)"
-		pid=$(pgrep -f "^${pname}" 2>/dev/null || true)
-
-		echo "# >>> PID: '${pid}'" >&3
-
-		if (( pid != 0 )); then
-			kill -9 ${pid} &>/dev/null || true
-			wait ${pid} &>/dev/null || true
+		pids=$(pgrep -f "^${pname}" 2>/dev/null || true)
+		# shellcheck disable=2086
+		if [[ -n "${pids}" ]]; then
+			kill -9 ${pids} &>/dev/null || true
+			wait ${pids} &>/dev/null || true
 		fi
 		printf '%s' "${output}" | "${PW_HOME}/src/copy"
 		( ( exec -a "${pname}" bash <<< "trap 'kill %1' TERM; sleep ${PW_CLIP_TIME} & wait " )
