@@ -218,6 +218,9 @@ pw::output() {
 		local -i pid
 		pname="pw-$(id -u)"
 		pid=$(pgrep -f "^${pname}" 2>/dev/null || true)
+
+		echo "# >>> PID: '${pid}'" >&3
+
 		if (( pid != 0 )); then
 			kill -9 ${pid} &>/dev/null || true
 			wait ${pid} &>/dev/null || true
